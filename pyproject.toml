@@ -6,6 +6,7 @@ authors = ["Moritz Makowski <moritz@dostuffthatmatters.dev>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+cdsapi = "^0.5.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"
