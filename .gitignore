@@ -1,7 +1,10 @@
 .venv
 *.grib
+*.ARL
 *ecm2arl.sh
 *era52arl.cfg
+arldata.cfg
 get_era5_message.txt
+ERA52ARL.MESSAGE
 *.pyc
 *.vscode

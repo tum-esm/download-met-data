@@ -61,13 +61,15 @@ def run():
                 for model in models:
                     out_file = f"{data_dir}/grib/{models[model]}"
                     cache_file = f"{cache_dir}/grib/{models[model]}"
-                    out_cfg = f"{data_dir}/era52arl.cfg"
+                    out_cfg = f"era52arl.cfg"
                     cache_cfg = f"{cache_dir}/era52arl.cfg"
 
                     if os.path.isfile(cache_file) and os.path.isfile(cache_cfg):
+                        print("using cached grib")
                         shutil.copy(cache_file, out_file)
                         shutil.copy(cache_cfg, out_cfg)
                     else:
+                        print("computing grib")
                         subprocess.run(
                             [
                                 "python3.9",
@@ -98,18 +100,16 @@ def run():
                 cache_file = f"{cache_dir}/arl/{filename}"
 
                 if os.path.isfile(cache_file):
+                    print("using cached arl")
                     shutil.copy(cache_file, out_file)
                 else:
+                    print("computing arl")
                     subprocess.run(
                         [
                             f"{era52arl_dir}/era52arl",
-                            "-i",
-                            f"{data_dir}/grib/{models['3d']}",
-                            "-a",
-                            f"{data_dir}/grib/{models['2da']}",
+                            f"-i{data_dir}/grib/{models['3d']}",
+                            f"-a{data_dir}/grib/{models['2da']}",
                         ],
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
                     )
                     os.rename("DATA.ARL", out_file)
                     shutil.copy(out_file, cache_file)
