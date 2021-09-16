@@ -3,3 +3,5 @@
 *ecm2arl.sh
 *era52arl.cfg
 get_era5_message.txt
+*.pyc
+*.vscode

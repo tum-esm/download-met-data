@@ -8,7 +8,7 @@
 # read the simulation date
 year=2021
 month=9
-day=$(seq 9 9)
+day=$(seq 9 12)
 #day=31
 #year=$(awk -F\/ '{print $3}' Date.dat)
 #month=$(awk -F\/ '{print $1}' Dte.dat)
@@ -54,47 +54,47 @@ mv new_era52arl.cfg era52arl.cfg
 # all the data downloaded properly.
 #-----------------------------------------
 
-# MDL=/usr/local/hysplit/data2arl/era52arl
-# limit=10
-# 
-# for line in $day
-# do
-# 
-# 	echo "line=$line"
-# 	yy=$year
-# 	echo "year=$yy"
-# 
-# 
-# 	mm=$month
-# 	echo "month=$mm"
-# 
-# 	month_name=$(awk -F\/ '{print $1}' month_name.dat)
-# 	mm_month=$(echo $month_name | awk '{print $(echo '$mm')}'| sed -n '1p')
-# 
-# 	if  [ "$mm" -lt "$limit" ]; then
-# 	    mm_m=$(printf "%01d"$(echo $mm))
-# 	else
-# 	    mm_m=$(echo $mm)
-# 	fi
-# 
-# 
-# 	dd=$line
-# 	echo "day=$dd"
-# 
-# 	if  [ "$dd" -lt "$limit" ]; then
-# 	    dd_day=$(printf "%01d"$(echo $dd))
-# 	else
-# 	    dd_day=$(echo $dd)
-# 	fi
-# 
-#   echo "Converting year $yy month $mm_month day $dd_day"
-# 
-# 
-# 	echo '---------------------------------------------------------------------------------'
-#   echo $MDL/era52arl -i${outdir_gb}ERA5_${yy}.${mm_month}${dd_day}.3dpl.grib -a${outdir_gb}ERA5_${yy}.${mm_month}${dd_day}.2dpl.all.grib
-#   $MDL/era52arl -i${outdir_gb}ERA5_${yy}.${mm_month}${dd_day}.3dpl.grib -a${outdir_gb}ERA5_${yy}.${mm_month}${dd_day}.2dpl.all.grib
-#   mv $PDL/DATA.ARL ${outdir_arl}ERA5_${yy}${mm_m}${dd_day}.ARL
-#   echo 'DONE ---------------------------------------------------------------------------------'
-# 
-# done
+MDL=/usr/local/hysplit/data2arl/era52arl
+limit=10
+
+for line in $day
+do
+
+	echo "line=$line"
+	yy=$year
+	echo "year=$yy"
+
+
+	mm=$month
+	echo "month=$mm"
+
+	month_name=$(awk -F\/ '{print $1}' month_name.dat)
+	mm_month=$(echo $month_name | awk '{print $(echo '$mm')}'| sed -n '1p')
+
+	if  [ "$mm" -lt "$limit" ]; then
+	    mm_m=$(printf "%01d"$(echo $mm))
+	else
+	    mm_m=$(echo $mm)
+	fi
+
+
+	dd=$line
+	echo "day=$dd"
+
+	if  [ "$dd" -lt "$limit" ]; then
+	    dd_day=$(printf "%01d"$(echo $dd))
+	else
+	    dd_day=$(echo $dd)
+	fi
+
+  echo "Converting year $yy month $mm_month day $dd_day"
+
+
+	echo '---------------------------------------------------------------------------------'
+  echo $MDL/era52arl -i${outdir_gb}ERA5_${yy}.${mm_month}${dd_day}.3dpl.grib -a${outdir_gb}ERA5_${yy}.${mm_month}${dd_day}.2dpl.all.grib
+  $MDL/era52arl -i${outdir_gb}ERA5_${yy}.${mm_month}${dd_day}.3dpl.grib -a${outdir_gb}ERA5_${yy}.${mm_month}${dd_day}.2dpl.all.grib
+  mv $PDL/DATA.ARL ${outdir_arl}ERA5_${yy}${mm_m}${dd_day}.ARL
+  echo 'DONE ---------------------------------------------------------------------------------'
+
+done
 
