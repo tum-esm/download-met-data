@@ -51,6 +51,7 @@ def run():
     for year in dates.keys():
         for month in dates[year].keys():
             for day in dates[year][month]:
+                ymd_string = f"{year}{str(month).zfill(2)}{str(day).zfill(2)}"
 
                 file_prefix = f"ERA5_{year}.{months[month-1]}{str(day).zfill(2)}"
                 models = {
@@ -65,11 +66,11 @@ def run():
                     cache_cfg = f"{cache_dir}/era52arl.cfg"
 
                     if os.path.isfile(cache_file) and os.path.isfile(cache_cfg):
-                        print("using cached grib")
+                        print(f"{ymd_string} - using cached grib ({model})")
                         shutil.copy(cache_file, out_file)
                         shutil.copy(cache_cfg, out_cfg)
                     else:
-                        print("computing grib")
+                        print(f"{ymd_string} - computing grib ({model})")
                         subprocess.run(
                             [
                                 "python3.9",
@@ -86,7 +87,9 @@ def run():
                                 "-g",
                                 "--area",
                                 area_string,
-                            ]
+                            ],
+                            stderr=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
                         )
                         assert os.path.isfile(out_file)
                         shutil.copy(out_file, cache_file)
@@ -95,21 +98,27 @@ def run():
                         os.rename("new_era52arl.cfg", out_cfg)
                         shutil.copy(out_cfg, cache_cfg)
 
-                filename = f"ERA5_{year}{str(month).zfill(2)}{str(day).zfill(2)}.ARL"
+                filename = f"ERA5_{ymd_string}.ARL"
                 out_file = f"{data_dir}/arl/{filename}"
                 cache_file = f"{cache_dir}/arl/{filename}"
 
                 if os.path.isfile(cache_file):
-                    print("using cached arl")
+                    print(f"{ymd_string} - using cached arl")
                     shutil.copy(cache_file, out_file)
                 else:
-                    print("computing arl")
+                    print(f"{ymd_string} - computing arl")
                     subprocess.run(
                         [
                             f"{era52arl_dir}/era52arl",
                             f"-i{data_dir}/grib/{models['3d']}",
                             f"-a{data_dir}/grib/{models['2da']}",
                         ],
+                        stderr=subprocess.PIPE,
+                        stdout=subprocess.PIPE,
                     )
                     os.rename("DATA.ARL", out_file)
                     shutil.copy(out_file, cache_file)
+
+    for tmp_file in ["arldata.cfg", "era52arl.cfg", "ERA52ARL.MESSAGE"]:
+        if os.path.isfile(tmp_file):
+            os.remove(tmp_file)
