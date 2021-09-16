@@ -1,6 +1,7 @@
 import os
 import subprocess
 import shutil
+import json
 
 """
 Resources:
@@ -12,14 +13,12 @@ ecCodes: https://confluence.ecmwf.int/display/ECC
 
 project_dir = "/".join(__file__.split("/")[:-2])
 data_dir = f"{project_dir}/data"
-era52arl_dir = "/usr/local/hysplit/data2arl/era52arl"
-dates = {2021: {9: [10, 11]}}
-area = {
-    "north": 60,
-    "south": 40,
-    "east": 20,
-    "west": 0,
-}
+
+with open(f"{project_dir}/config.json", "r") as f:
+    config = json.load(f)
+    ERA52ARL = config["era52arl"]
+    DATES = config["dates"]
+    AREA = config["area"]
 
 
 months = [
@@ -40,7 +39,7 @@ months = [
 
 def run():
 
-    area_string = f"{area['north']}/{area['west']}/{area['south']}/{area['east']}"
+    area_string = f"{AREA['north']}/{AREA['west']}/{AREA['south']}/{AREA['east']}"
     cache_dir = f"{project_dir}/cache/{area_string.replace('/', '-')}"
     cache_exists = os.path.isdir(cache_dir)
     if not cache_exists:
@@ -48,12 +47,12 @@ def run():
         os.makedir(f"{cache_dir}/grib")
         os.makedir(f"{cache_dir}/arl")
 
-    for year in dates.keys():
-        for month in dates[year].keys():
-            for day in dates[year][month]:
+    for year in DATES.keys():
+        for month in DATES[year].keys():
+            for day in DATES[year][month]:
                 ymd_string = f"{year}{str(month).zfill(2)}{str(day).zfill(2)}"
 
-                file_prefix = f"ERA5_{year}.{months[month-1]}{str(day).zfill(2)}"
+                file_prefix = f"ERA5_{year}.{months[int(month)-1]}{str(day).zfill(2)}"
                 models = {
                     "3d": f"{file_prefix}.3dpl.grib",
                     "2da": f"{file_prefix}.2dpl.all.grib",
@@ -109,7 +108,7 @@ def run():
                     print(f"{ymd_string} - computing arl")
                     subprocess.run(
                         [
-                            f"{era52arl_dir}/era52arl",
+                            ERA52ARL,
                             f"-i{data_dir}/grib/{models['3d']}",
                             f"-a{data_dir}/grib/{models['2da']}",
                         ],

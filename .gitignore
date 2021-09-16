@@ -8,3 +8,4 @@ get_era5_message.txt
 ERA52ARL.MESSAGE
 *.pyc
 *.vscode
+config.json
