@@ -10,10 +10,7 @@ ecCodes: https://confluence.ecmwf.int/display/ECC
 
 
 project_dir = "/".join(__file__.split("/")[:-2])
-data_dir = f"{project_dir}/data"
-api_src_dir = f"{project_dir}/archive"
 era52arl_dir = "/usr/local/hysplit/data2arl/era52arl"
-
 dates = {2021: {9: [10, 11]}}
 area = {
     "north": 60,
@@ -21,6 +18,8 @@ area = {
     "east": 20,
     "west": 0,
 }
+
+
 months = [
     "Jan",
     "Feb",
@@ -45,7 +44,7 @@ def run():
                 subprocess.run(
                     [
                         "python3.9",
-                        f"{api_src_dir}/get_era5_cds.py",
+                        f"{project_dir}/src/helpers/get_era5_cds.py",
                         "--3d",
                         "-y",
                         f"{year}",
@@ -54,7 +53,7 @@ def run():
                         "-d",
                         f"{day}",
                         "--dir",
-                        f"{data_dir}/grib",
+                        f"{project_dir}/data/grib",
                         "-g",
                         "--area",
                         f"{area['north']}/{area['west']}/{area['south']}/{area['east']}",
@@ -62,11 +61,11 @@ def run():
                 )
 
                 assert "new_era52arl.cfg" in os.listdir(".")
-                os.rename("new_era52arl.cfg", f"{data_dir}/era52arl.cfg")
+                os.rename("new_era52arl.cfg", f"{project_dir}/data/era52arl.cfg")
 
                 file_prefix = f"ERA5_{year}.{months[month-1]}{str(day).zfill(2)}"
-                path_to_3dpl = f"{data_dir}/grib/{file_prefix}.3dpl.grib"
-                path_to_2dpl = f"{data_dir}/grib/{file_prefix}.2dpl.all.grib"
+                path_to_3dpl = f"{project_dir}/data/grib/{file_prefix}.3dpl.grib"
+                path_to_2dpl = f"{project_dir}/data/grib/{file_prefix}.2dpl.all.grib"
                 assert os.path.isfile(path_to_3dpl)
                 assert os.path.isfile(path_to_2dpl)
                 subprocess.run(
@@ -83,5 +82,5 @@ def run():
                 ymd_label = f"{year}{str(month).zfill(2)}{str(day).zfill(2)}"
                 os.rename(
                     "DATA.ARL",
-                    f"{data_dir}/arl/ERA5_{ymd_label}.ARL",
+                    f"{project_dir}/data/arl/ERA5_{ymd_label}.ARL",
                 )

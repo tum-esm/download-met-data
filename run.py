@@ -1,3 +1,4 @@
-from src import script_01_download_grib
+from src import main
 
-script_01_download_grib.run()
+if __name__ == "__main__":
+    main.run()
