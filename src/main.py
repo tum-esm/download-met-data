@@ -31,6 +31,17 @@ months = [
 ]
 
 
+def remove_tmp_files():
+    for tmp_file in [
+        "arldata.cfg",
+        "era52arl.cfg",
+        "ERA52ARL.MESSAGE",
+        "get_era5_message.txt",
+    ]:
+        if os.path.isfile(tmp_file):
+            os.remove(tmp_file)
+
+
 def run(date_string):
 
     with open(f"{project_dir}/config.json", "r") as f:
@@ -87,6 +98,7 @@ def run(date_string):
             )
             if not os.path.isfile(out_file):
                 print(f"{date_string} - data not available")
+                remove_tmp_files()
                 return
 
             shutil.copy(out_file, cache_file)
@@ -115,6 +127,4 @@ def run(date_string):
         os.rename("DATA.ARL", out_file)
         shutil.copy(out_file, cache_file)
 
-    for tmp_file in ["arldata.cfg", "era52arl.cfg", "ERA52ARL.MESSAGE"]:
-        if os.path.isfile(tmp_file):
-            os.remove(tmp_file)
+    remove_tmp_files()
