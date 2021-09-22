@@ -127,4 +127,8 @@ def run(date_string):
         os.rename("DATA.ARL", out_file)
         shutil.copy(out_file, cache_file)
 
+    if os.path.isfile(out_file):
+        print(f"{date_string} - finished")
+    else:
+        print(f"{date_string} - era52arl execution failed")
     remove_tmp_files()
