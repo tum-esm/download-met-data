@@ -14,11 +14,6 @@ ecCodes: https://confluence.ecmwf.int/display/ECC
 project_dir = "/".join(__file__.split("/")[:-2])
 data_dir = f"{project_dir}/data"
 
-with open(f"{project_dir}/config.json", "r") as f:
-    config = json.load(f)
-    ERA52ARL = config["era52arl"]
-    AREA = config["area"]
-
 
 months = [
     "Jan",
@@ -37,6 +32,11 @@ months = [
 
 
 def run(date_string):
+
+    with open(f"{project_dir}/config.json", "r") as f:
+        config = json.load(f)
+        ERA52ARL = config["era52arl"]
+        AREA = config["area"]
 
     area_string = f"{AREA['north']}/{AREA['west']}/{AREA['south']}/{AREA['east']}"
     cache_dir = f"{project_dir}/cache/{area_string.replace('/', '-')}"
