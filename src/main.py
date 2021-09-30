@@ -12,7 +12,6 @@ ecCodes: https://confluence.ecmwf.int/display/ECC
 
 
 project_dir = "/".join(__file__.split("/")[:-2])
-data_dir = f"{project_dir}/data"
 
 
 months = [
@@ -48,14 +47,15 @@ def run(date_string):
         config = json.load(f)
         ERA52ARL = config["era52arl"]
         AREA = config["area"]
+        DST = config["dst"]
 
     area_string = f"{AREA['north']}/{AREA['west']}/{AREA['south']}/{AREA['east']}"
     cache_dir = f"{project_dir}/cache/{area_string.replace('/', '-')}"
     cache_exists = os.path.isdir(cache_dir)
-    if not cache_exists:
-        os.makedir(cache_dir)
-        os.makedir(f"{cache_dir}/grib")
-        os.makedir(f"{cache_dir}/arl")
+    data_dir = DST
+    for appendix in ["", "/grib", "/arl"]:
+        assert os.path.isdir(cache_exists + appendix)
+        assert os.path.isdir(data_dir + appendix)
 
     year, month, day = int(date_string[:4]), int(date_string[4:6]), int(date_string[6:])
     file_prefix = f"ERA5_{year}.{months[int(month)-1]}{str(day).zfill(2)}"

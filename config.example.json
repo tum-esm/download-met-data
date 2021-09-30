@@ -1,14 +1,11 @@
 {
-    "dates": {
-        "2021": {
-            "9": [10, 11]
-        }
-    },
+    "dates": ["20210909"],
     "area": {
         "north": 60,
         "south": 40,
         "east": 20,
         "west": 0
     },
-    "era52arl": "/usr/local/hysplit/data2arl/era52arl/era52arl"
+    "era52arl": "/usr/local/hysplit/data2arl/era52arl/era52arl",
+    "dst": "/some/destination/path/for/your/data"
 }
