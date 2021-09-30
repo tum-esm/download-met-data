@@ -51,10 +51,9 @@ def run(date_string):
 
     area_string = f"{AREA['north']}/{AREA['west']}/{AREA['south']}/{AREA['east']}"
     cache_dir = f"{project_dir}/cache/{area_string.replace('/', '-')}"
-    cache_exists = os.path.isdir(cache_dir)
     data_dir = DST
     for appendix in ["", "/grib", "/arl"]:
-        assert os.path.isdir(cache_exists + appendix)
+        assert os.path.isdir(cache_dir + appendix)
         assert os.path.isdir(data_dir + appendix)
 
     year, month, day = int(date_string[:4]), int(date_string[4:6]), int(date_string[6:])
