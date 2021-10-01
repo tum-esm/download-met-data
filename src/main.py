@@ -52,6 +52,10 @@ def run(date_string):
     area_string = f"{AREA['north']}/{AREA['west']}/{AREA['south']}/{AREA['east']}"
     cache_dir = f"{project_dir}/cache/{area_string.replace('/', '-')}"
     data_dir = DST
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
+        os.mkdir(cache_dir + "/grib")
+        os.mkdir(cache_dir + "/arl")
     for appendix in ["", "/grib", "/arl"]:
         assert os.path.isdir(cache_dir + appendix)
         assert os.path.isdir(data_dir + appendix)
@@ -63,21 +67,30 @@ def run(date_string):
         "2da": f"{file_prefix}.2dpl.all.grib",
     }
 
-    for model in models:
-        out_file = f"{data_dir}/grib/{models[model]}"
-        cache_file = f"{cache_dir}/grib/{models[model]}"
-        out_cfg = f"era52arl.cfg"
-        cache_cfg = f"{cache_dir}/era52arl.cfg"
+    arl_filename = f"ERA5.{date_string}.ARL"
+    arl_out_file = f"{data_dir}/arl/{arl_filename}"
+    arl_cache_file = f"{cache_dir}/arl/{arl_filename}"
 
-        if os.path.isfile(cache_file) and os.path.isfile(cache_cfg):
+    if os.path.isfile(arl_cache_file):
+        print(f"{date_string} - using cached arl")
+        shutil.copy(arl_cache_file, arl_out_file)
+        return
+
+    for model in models:
+        grib_out_file = f"{data_dir}/grib/{models[model]}"
+        grib_cache_file = f"{cache_dir}/grib/{models[model]}"
+        grib_out_cfg = f"era52arl.cfg"
+        grib_cache_cfg = f"{cache_dir}/era52arl.cfg"
+
+        if os.path.isfile(grib_cache_file) and os.path.isfile(grib_cache_cfg):
             print(f"{date_string} - using cached grib ({model})")
-            shutil.copy(cache_file, out_file)
-            shutil.copy(cache_cfg, out_cfg)
+            shutil.copy(grib_cache_file, grib_out_file)
+            shutil.copy(grib_cache_cfg, grib_out_cfg)
         else:
             print(f"{date_string} - computing grib ({model})")
             subprocess.run(
                 [
-                    "python3.9",
+                    f"{project_dir}/.venv/bin/python",
                     f"{project_dir}/src/helpers/get_era5_cds.py",
                     f"--{model}",
                     "-y",
@@ -95,24 +108,18 @@ def run(date_string):
                 stderr=subprocess.PIPE,
                 stdout=subprocess.PIPE,
             )
-            if not os.path.isfile(out_file):
+            if not os.path.isfile(grib_out_file):
                 print(f"{date_string} - data not available")
                 remove_tmp_files()
                 return
 
-            shutil.copy(out_file, cache_file)
+            shutil.copy(grib_out_file, grib_cache_file)
             assert "new_era52arl.cfg" in os.listdir(".")
-            os.rename("new_era52arl.cfg", out_cfg)
-            shutil.copy(out_cfg, cache_cfg)
+            os.rename("new_era52arl.cfg", grib_out_cfg)
+            shutil.copy(grib_out_cfg, grib_cache_cfg)
 
-    filename = f"ERA5.{date_string}.ARL"
-    out_file = f"{data_dir}/arl/{filename}"
-    cache_file = f"{cache_dir}/arl/{filename}"
-
-    if os.path.isfile(cache_file):
-        print(f"{date_string} - using cached arl")
-        shutil.copy(cache_file, out_file)
-    else:
+    # if arl is not in cache -> run era52arl
+    if not os.path.isfile(arl_cache_file):
         print(f"{date_string} - computing arl")
         subprocess.run(
             [
@@ -123,11 +130,12 @@ def run(date_string):
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE,
         )
-        os.rename("DATA.ARL", out_file)
-        shutil.copy(out_file, cache_file)
+        os.rename("DATA.ARL", arl_out_file)
+        shutil.copy(arl_out_file, arl_cache_file)
 
-    if os.path.isfile(out_file):
-        print(f"{date_string} - finished")
-    else:
-        print(f"{date_string} - era52arl execution failed")
+        if os.path.isfile(arl_out_file):
+            print(f"{date_string} - finished")
+        else:
+            print(f"{date_string} - era52arl execution failed")
+
     remove_tmp_files()
