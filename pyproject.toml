@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "download-cds-data"
+name = "download-met-data"
 version = "0.1.0"
 description = ""
 authors = ["Moritz Makowski <moritz@dostuffthatmatters.dev>"]

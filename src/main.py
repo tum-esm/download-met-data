@@ -11,7 +11,7 @@ ecCodes: https://confluence.ecmwf.int/display/ECC
 """
 
 
-project_dir = "/".join(__file__.split("/")[:-2])
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 months = [
@@ -43,14 +43,14 @@ def remove_tmp_files():
 
 def run(date_string):
 
-    with open(f"{project_dir}/config.json", "r") as f:
+    with open(f"{PROJECT_DIR}/config.json", "r") as f:
         config = json.load(f)
         ERA52ARL = config["era52arl"]
         AREA = config["area"]
         DST = config["dst"]
 
     area_string = f"{AREA['north']}/{AREA['west']}/{AREA['south']}/{AREA['east']}"
-    cache_dir = f"{project_dir}/cache/{area_string.replace('/', '-')}"
+    cache_dir = f"{PROJECT_DIR}/cache/{area_string.replace('/', '-')}"
     data_dir = DST
     if not os.path.isdir(cache_dir):
         os.mkdir(cache_dir)
@@ -90,8 +90,8 @@ def run(date_string):
             print(f"{date_string} - computing grib ({model})")
             subprocess.run(
                 [
-                    f"{project_dir}/.venv/bin/python",
-                    f"{project_dir}/src/helpers/get_era5_cds.py",
+                    f"{PROJECT_DIR}/.venv/bin/python",
+                    f"{PROJECT_DIR}/src/helpers/get_era5_cds.py",
                     f"--{model}",
                     "-y",
                     f"{year}",
